@@ -1,0 +1,65 @@
+{
+  "schema": "raven-conformance-report/1",
+  "run_id": "run_proposal_a_mvp",
+  "target": {
+    "id": "BROKEN_SUBTLE",
+    "claimed_conformance_profile": "raven-canonical-envelope/1"
+  },
+  "claimed_profile": {
+    "name": "raven-canonical-envelope/1",
+    "version": "1.0.0",
+    "file": "raven-canonical-envelope-1.json",
+    "sha256": "914c2d5673ee9c5aaef00acac27440f6481f6397bdec81c2c835e088fe66bca4"
+  },
+  "corpus": {
+    "id": "raven-canonical-envelope-demo-corpus/1",
+    "version": "1.1.0",
+    "sha256": "374bf72f28cfc3356269692e2d0e99a9f34b9b83ab5196ca9408d965be531073",
+    "vector_count": 12
+  },
+  "summary": {
+    "test_count": 12,
+    "pass": 10,
+    "divergence": 2,
+    "overall": "DIVERGENT"
+  },
+  "sample_divergence": {
+    "vector_id": "V07_unexpected_top_level_field",
+    "description": "Unexpected top-level field must REJECT (subtle-defect probe)",
+    "expected": {
+      "decision": "REJECT"
+    },
+    "observed": {
+      "decision": "ACCEPT",
+      "reason": "subtle_accepts_extra_fields"
+    },
+    "status": "DIVERGENCE",
+    "evidence": {
+      "stdout": "{\"decision\":\"ACCEPT\",\"reason\":\"subtle_accepts_extra_fields\"}\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 53
+    }
+  },
+  "divergence_definition": "DIVERGENCE = observed decision ≠ specified corpus expectation only. Not automatically exploitable, unsafe, or malicious. No generic security score.",
+  "reproduction": {
+    "clean_clone": "# Verify the external ZIP hash and packet manifest before running these commands.\n# Run from the extracted delivery folder containing the bundle and DELIVERY-IDENTITY.json.\nset -e\ngit clone --branch codex/c2-release-successor-2026-09-19 ./raven-c2-release-successor-2026-09-19.bundle raven-worldsfair-2026\ncd raven-worldsfair-2026\ngit rev-parse HEAD\ngit rev-parse 'HEAD^{tree}'\nnode -e 'const fs=require(\"node:fs\"),cp=require(\"node:child_process\"),id=JSON.parse(fs.readFileSync(\"../DELIVERY-IDENTITY.json\",\"utf8\"));const head=cp.execFileSync(\"git\",[\"rev-parse\",\"HEAD\"],{encoding:\"utf8\"}).trim(),tree=cp.execFileSync(\"git\",[\"rev-parse\",\"HEAD^{tree}\"],{encoding:\"utf8\"}).trim();if(id.head!==head||id.tree!==tree||id.branch!==\"codex/c2-release-successor-2026-09-19\"||id.bundle!==\"raven-c2-release-successor-2026-09-19.bundle\")throw Error(\"DELIVERY_IDENTITY_MISMATCH\");'\n# AUTHOR-REPORT.md beside the bundle records scope, checks and limitations.\ncd apps/raven-conformance\nnpm test\nnpm run conform -- --target BROKEN_SUBTLE\n# BROKEN_SUBTLE intentionally returns exit 1 for V07/V08 divergence; reference returns 0.",
+    "one_liner": "cd apps/raven-conformance && npm run conform -- --target BROKEN_SUBTLE"
+  },
+  "report_content_digest_sha256": "3b68d2d0c317238362fe216449b150a2beea6b89fcd2bbb1e8a9055a4557ed3c",
+  "limitations": [
+    "MVP isolation is local Node child_process with restricted env and timeout — not a general sandbox or container hardened runtime.",
+    "Outbound network is denied by unsetting proxies and documenting policy; this does not install a kernel network namespace.",
+    "Demo targets and corpus are Raven-owned Fair self-contained fixtures — not private production corpora.",
+    "Does not include token, marketplace, cert authority, pentest scanner, accounts, registry, billing, or governance architecture.",
+    "Author-lane Fair Build Stage product review surface only."
+  ],
+  "reproduction_update": {
+    "kind": "instructions_only",
+    "observations_rerun": false,
+    "previous_file_sha256": "95c7e2ae4aa7f0de74efba5f6c604586848753720f57f2ffa4bcd94c88c98624",
+    "source_commit": "24dbca45ef479fc843fef593365e4007dff75ed3",
+    "note": "Recorded observations are retained. Delivery instructions supersede the prior recipe; this is not a fresh execution or a claim of replay compatibility.",
+    "previous_candidate": "1a8275cbbeb5513011f06325c334e24f619c0ae7"
+  }
+}
